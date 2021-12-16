@@ -52,7 +52,7 @@ class NN_experiment:
     return _LambdaCallback(on_epoch_end=\
         lambda epoch, logs: \
         self.weights_dict.update({epoch:self.model.get_weights()}))
-  def train_model(self):
+  def train_model(self,x_train,y_train):
     self.model.fit(
         x_train, 
         y_train, 
@@ -96,18 +96,18 @@ class NN_experiment:
 Series of NN experiments
 """
 class NN_series:
-  def __init__(self, n_experiments, epochs, steps_per_epoch):
+  def __init__(self, x_train,y_train, n_experiments, epochs, steps_per_epoch):
     self.n_experiments = n_experiments
     self.epochs = epochs
     self.steps_per_epoch = steps_per_epoch
     self.model_template = lambda: NN_experiment(epochs, steps_per_epoch)
-    self.series = self.create_series()
-  def create_series(self):
+    self.series = self.create_series(x_train,y_train)
+  def create_series(self,x_train,y_train):
     series_dict = {}
     for i in range(self.n_experiments):
       print(f'Series {i+1}/{self.n_experiments}')
       nn = self.model_template()
-      nn.train_model()
+      nn.train_model(x_train,y_train)
       series_dict.update({i: nn})
     return series_dict
   
