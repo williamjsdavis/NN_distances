@@ -1,12 +1,17 @@
+import tensorflow as _tf
+from keras.callbacks import _LambdaCallback
+import numpy as _np
+import matplotlib.pyplot as _plt
+
 """
 Default model setup
 """
 def model_structure():
-  model = tf.keras.models.Sequential([
-    tf.keras.layers.Flatten(input_shape=(28, 28)),
-    tf.keras.layers.Dense(128, activation='relu'),
-    tf.keras.layers.Dropout(0.2),
-    tf.keras.layers.Dense(10)
+  model = _tf.keras.models.Sequential([
+    _tf.keras.layers.Flatten(input_shape=(28, 28)),
+    _tf.keras.layers.Dense(128, activation='relu'),
+    _tf.keras.layers.Dropout(0.2),
+    _tf.keras.layers.Dense(10)
   ])
   return model
 
@@ -38,13 +43,13 @@ class NN_experiment:
   def make_model(self):
     model = model_structure()
     model.load_weights('model.h5')
-    loss_fn = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
+    loss_fn = _tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
     model.compile(optimizer='adam',
                   loss=loss_fn,
                   metrics=['accuracy'])
     return model
   def make_callback(self):
-    return LambdaCallback(on_epoch_end=\
+    return _LambdaCallback(on_epoch_end=\
         lambda epoch, logs: \
         self.weights_dict.update({epoch:self.model.get_weights()}))
   def train_model(self):
@@ -56,7 +61,7 @@ class NN_experiment:
         callbacks = [self.weights_callback])
   def test_weights_callback(self):
     for key in self.weights_dict:
-      print([key, np.sum(self.weights_dict[key][0].flatten())])
+      print([key, _np.sum(self.weights_dict[key][0].flatten())])
   def get_epoch_weights(self, n):
     return self.weights_dict[n]
   def scatter_weights(self, n_epoch=0):
@@ -66,26 +71,26 @@ class NN_experiment:
     i_end = 0
     for i in range(n_layers):
       layer_weights = weights[i]
-      layer_size = np.size(layer_weights)
+      layer_size = _np.size(layer_weights)
       i_end += layer_size
-      plt.plot(range(i_start,i_end),layer_weights.flatten(),'.')
+      _plt.plot(range(i_start,i_end),layer_weights.flatten(),'.')
       i_start += layer_size
   def hist_NN(self, n_epoch=0):
     weights = self.get_epoch_weights(n_epoch)
-    plt.subplot(121)
-    plt.title('Weights')
+    _plt.subplot(121)
+    _plt.title('Weights')
     for i in [0,2]:
       layer_weights = weights[i]
-      layer_size = np.size(layer_weights)
-      plt.hist(layer_weights.flatten(), 50, density=True, alpha=0.5)
-    plt.legend(['Layer 1','Layer 2'])
+      layer_size = _np.size(layer_weights)
+      _plt.hist(layer_weights.flatten(), 50, density=True, alpha=0.5)
+    _plt.legend(['Layer 1','Layer 2'])
     
-    plt.subplot(122)
-    plt.title('Biases')
+    _plt.subplot(122)
+    _plt.title('Biases')
     for i in [1,3]:
       layer_weights = weights[i]
-      layer_size = np.size(layer_weights)
-      plt.hist(layer_weights.flatten(), 10, density=True, alpha=0.5)
+      layer_size = _np.size(layer_weights)
+      _plt.hist(layer_weights.flatten(), 10, density=True, alpha=0.5)
 
 """
 Series of NN experiments
@@ -120,7 +125,7 @@ def make_mat(x):
           x.epochs, 
           x.series[0].model.layers[id_layer].weights[0].shape.num_elements())
   
-  x_mat = np.zeros(size)
+  x_mat = _np.zeros(size)
   for i, key in enumerate(x.series):
     for j in range(x.epochs):
       x_mat[i,j,:] = x.series[key].weights_dict[j][0].flatten()
@@ -141,8 +146,8 @@ Euclidian distances between an array and a matrix
 Compares dimentions of (i,j,:) and (j,:)
 """
 def euclidian_distance(x, x_mean, n_experiments, n_epochs):
-  distances = np.zeros((n_experiments, n_epochs))
+  distances = _np.zeros((n_experiments, n_epochs))
   for i in range(n_experiments):
     for j in range(n_epochs):
-      distances[i,j] = np.linalg.norm(x[i,j,:] - x_mean[j,:])
+      distances[i,j] = _np.linalg.norm(x[i,j,:] - x_mean[j,:])
   return distances
