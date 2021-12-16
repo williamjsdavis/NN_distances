@@ -1,5 +1,5 @@
 import tensorflow as _tf
-from keras.callbacks import _LambdaCallback
+from keras.callbacks import LambdaCallback as _LambdaCallback
 import numpy as _np
 import matplotlib.pyplot as _plt
 
